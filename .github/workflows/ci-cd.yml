@@ -60,12 +60,7 @@ jobs:
         run: mvn pmd:check -DfailOnViolation=false
         continue-on-error: true
 
-      # Step 7: Run OWASP Dependency-Check for security vulnerability scanning
-      - name: Run OWASP Dependency-Check
-        run: mvn dependency-check:check -DfailBuildOnCVSS=11 -DnvdApiKey=${{ secrets.NVD_API_KEY }}
-        continue-on-error: true
-
-      # Step 7b: Run Trivy vulnerability scanner on project dependencies
+      # Step 7: Run Trivy vulnerability scanner on project dependencies
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
@@ -76,7 +71,7 @@ jobs:
           output: 'target/trivy-report.txt'
         continue-on-error: true
 
-      # Step 7c: Run Trivy and generate HTML report for artifact upload
+      # Step 7b: Run Trivy and generate HTML report for artifact upload
       - name: Generate Trivy HTML report
         uses: aquasecurity/trivy-action@master
         with:
@@ -88,12 +83,32 @@ jobs:
           severity: 'CRITICAL,HIGH,MEDIUM'
         continue-on-error: true
 
+      # Step 7c: Run Semgrep SAST for security vulnerability detection
+      - name: Run Semgrep security scan
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: >-
+            p/java
+            p/spring
+            p/owasp-top-ten
+            p/security-audit
+        env:
+          SEMGREP_RULES: "p/java p/spring p/owasp-top-ten p/security-audit"
+        continue-on-error: true
+
+      # Step 7d: Run Semgrep and save JSON report for artifact upload
+      - name: Generate Semgrep report
+        run: |
+          pip install semgrep
+          semgrep --config p/java --config p/spring --config p/owasp-top-ten --config p/security-audit --json --output target/semgrep-report.json . || true
+          semgrep --config p/java --config p/spring --config p/owasp-top-ten --config p/security-audit --output target/semgrep-report.txt . || true
+        continue-on-error: true
+
       # Step 8: Generate JaCoCo code coverage report
       - name: Generate JaCoCo report
         run: mvn jacoco:report
 
       # Step 9: Run SonarCloud comprehensive code quality and security analysis
-      # Skips OWASP dependency-check during verify to prevent NVD API failures from blocking SonarCloud
       - name: Run SonarCloud analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -120,13 +135,15 @@ jobs:
           name: pmd-report
           path: target/pmd*
 
-      # Step 12: Upload OWASP Dependency-Check report as CI artifact
-      - name: Upload Dependency-Check report
+      # Step 12: Upload Semgrep security scan report as CI artifact
+      - name: Upload Semgrep report
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: dependency-check-report
-          path: target/dependency-check/
+          name: semgrep-report
+          path: |
+            target/semgrep-report.json
+            target/semgrep-report.txt
 
       # Step 13: Upload Trivy security scan report as CI artifact
       - name: Upload Trivy report
