@@ -65,15 +65,39 @@ jobs:
         run: mvn dependency-check:check -DfailBuildOnCVSS=11 -DnvdApiKey=${{ secrets.NVD_API_KEY }}
         continue-on-error: true
 
+      # Step 7b: Run Trivy vulnerability scanner on project dependencies
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'table'
+          severity: 'CRITICAL,HIGH,MEDIUM'
+          output: 'target/trivy-report.txt'
+        continue-on-error: true
+
+      # Step 7c: Run Trivy and generate HTML report for artifact upload
+      - name: Generate Trivy HTML report
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'template'
+          template: '@/contrib/html.tpl'
+          output: 'target/trivy-report.html'
+          severity: 'CRITICAL,HIGH,MEDIUM'
+        continue-on-error: true
+
       # Step 8: Generate JaCoCo code coverage report
       - name: Generate JaCoCo report
         run: mvn jacoco:report
 
       # Step 9: Run SonarCloud comprehensive code quality and security analysis
+      # Skips OWASP dependency-check during verify to prevent NVD API failures from blocking SonarCloud
       - name: Run SonarCloud analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=decentralised-peer-code-review
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=decentralised-peer-code-review -Ddependency-check.skip=true
         continue-on-error: true
 
       # Step 10: Package the application as a JAR file
@@ -104,7 +128,17 @@ jobs:
           name: dependency-check-report
           path: target/dependency-check/
 
-      # Step 13: Upload JaCoCo code coverage report as CI artifact
+      # Step 13: Upload Trivy security scan report as CI artifact
+      - name: Upload Trivy report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: trivy-report
+          path: |
+            target/trivy-report.txt
+            target/trivy-report.html
+
+      # Step 14: Upload JaCoCo code coverage report as CI artifact
       - name: Upload JaCoCo coverage report
         uses: actions/upload-artifact@v4
         if: always()
