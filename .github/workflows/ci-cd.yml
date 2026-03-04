@@ -62,7 +62,7 @@ jobs:
 
       # Step 7: Run OWASP Dependency-Check for security vulnerability scanning
       - name: Run OWASP Dependency-Check
-        run: mvn dependency-check:check -DfailBuildOnCVSS=11
+        run: mvn dependency-check:check -DfailBuildOnCVSS=11 -DnvdApiKey=${{ secrets.NVD_API_KEY }}
         continue-on-error: true
 
       # Step 8: Generate JaCoCo code coverage report
