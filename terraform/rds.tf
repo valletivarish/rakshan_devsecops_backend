@@ -39,7 +39,7 @@ resource "aws_security_group" "rds_sg" {
 resource "aws_db_instance" "postgres" {
   identifier             = "codereview-db"
   engine                 = "postgres"
-  engine_version         = "15.4"
+  engine_version         = "15.17"
   instance_class         = var.db_instance_class
   allocated_storage      = 20
   max_allocated_storage  = 50

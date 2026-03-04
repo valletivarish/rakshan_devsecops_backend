@@ -82,3 +82,13 @@ resource "aws_instance" "backend" {
     Project = "DecentralisedPeerCodeReview"
   }
 }
+
+# Elastic IP for a static public IP that persists across EC2 restarts
+resource "aws_eip" "backend" {
+  instance = aws_instance.backend.id
+  domain   = "vpc"
+
+  tags = {
+    Name = "codereview-backend-eip"
+  }
+}

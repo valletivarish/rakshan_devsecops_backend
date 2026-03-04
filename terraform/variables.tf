@@ -13,7 +13,7 @@ variable "aws_region" {
 variable "instance_type" {
   description = "EC2 instance type for the backend server"
   type        = string
-  default     = "t2.micro"
+  default     = "t3.micro"
 }
 
 variable "ami_id" {
@@ -51,5 +51,5 @@ variable "db_password" {
 variable "s3_bucket_name" {
   description = "Name of the S3 bucket for frontend hosting"
   type        = string
-  default     = "codereview-frontend-rakshan"
+  default     = "codereview-frontend-platform"
 }
