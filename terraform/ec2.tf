@@ -1,6 +1,6 @@
 # =============================================
 # EC2 Instance Configuration
-# Provisions a t2.micro instance running the Spring Boot backend.
+# Provisions a t3.micro Ubuntu 22.04 instance running the Spring Boot backend.
 # Includes user data script to install Java 17 and configure systemd service.
 # Security group allows HTTP (8080) and SSH (22) access.
 # =============================================
@@ -54,19 +54,19 @@ resource "aws_instance" "backend" {
   user_data = <<-EOF
               #!/bin/bash
               # Update system packages
-              sudo yum update -y
-              # Install Java 17 (Amazon Corretto) for running Spring Boot
-              sudo yum install -y java-17-amazon-corretto-devel
+              sudo apt update -y
+              # Install Java 17 (OpenJDK) for running Spring Boot
+              sudo apt install -y openjdk-17-jdk-headless
               # Create application directory
-              mkdir -p /home/ec2-user/app
+              mkdir -p /home/ubuntu/app
               # Create systemd service file for the Spring Boot application
               cat > /etc/systemd/system/codereview.service <<'SERVICE'
               [Unit]
               Description=Code Review Platform Backend
               After=network.target
               [Service]
-              User=ec2-user
-              ExecStart=/usr/bin/java -jar /home/ec2-user/app/codereview-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod
+              User=ubuntu
+              ExecStart=/usr/bin/java -jar /home/ubuntu/app/codereview-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod
               Restart=always
               RestartSec=10
               [Install]

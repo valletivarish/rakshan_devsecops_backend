@@ -142,13 +142,13 @@ jobs:
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
-          username: ec2-user
+          username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             # Stop existing application process if running
             sudo systemctl stop codereview || true
             # Create application directory if it does not exist
-            mkdir -p /home/ec2-user/app
+            mkdir -p /home/ubuntu/app
             # The JAR will be transferred via SCP in a separate step
 
       # Step 3: Copy JAR file to EC2 via SCP
@@ -156,10 +156,10 @@ jobs:
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
-          username: ec2-user
+          username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "target/*.jar"
-          target: "/home/ec2-user/app/"
+          target: "/home/ubuntu/app/"
           strip_components: 1
 
       # Step 4: Start the application on EC2
@@ -167,7 +167,7 @@ jobs:
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
-          username: ec2-user
+          username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             # Start the Spring Boot application using systemd

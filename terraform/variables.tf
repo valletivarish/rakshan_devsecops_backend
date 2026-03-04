@@ -17,7 +17,7 @@ variable "instance_type" {
 }
 
 variable "ami_id" {
-  description = "Amazon Machine Image ID for the EC2 instance (Amazon Linux 2023)"
+  description = "Amazon Machine Image ID for the EC2 instance (Ubuntu 22.04 LTS)"
   type        = string
   default     = "ami-0c1c30571d2dae5c9"
 }

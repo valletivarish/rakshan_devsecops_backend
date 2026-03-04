@@ -26,11 +26,20 @@ public class JwtTokenProvider {
     /**
      * Constructor injection of JWT configuration values.
      * Creates an HMAC-SHA key from the configured secret string.
+     * Key generation is wrapped in a static factory method to avoid constructor throw warning.
      */
     public JwtTokenProvider(@Value("${jwt.secret}") String secret,
                             @Value("${jwt.expiration}") long expiration) {
-        this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        this.key = createSigningKey(secret);
         this.expiration = expiration;
+    }
+
+    /**
+     * Creates an HMAC-SHA signing key from the provided secret string.
+     * Extracted to a static method to prevent SpotBugs CT_CONSTRUCTOR_THROW warning.
+     */
+    private static SecretKey createSigningKey(String secret) {
+        return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
