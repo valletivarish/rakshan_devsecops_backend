@@ -22,7 +22,7 @@ Thumbs.db
 # Environment and secrets
 .env
 *.env
-application-prod.properties
+# application-prod.properties
 
 # Terraform state files (contain sensitive infrastructure details)
 terraform/.terraform/

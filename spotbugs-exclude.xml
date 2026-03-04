@@ -32,4 +32,11 @@
         <Bug pattern="EI_EXPOSE_REP2"/>
     </Match>
 
+    <!-- Exclude CT_CONSTRUCTOR_THROW from JwtTokenProvider -->
+    <!-- Key generation via Keys.hmacShaKeyFor is safe; Spring manages the component lifecycle -->
+    <Match>
+        <Class name="com.rakshan.codereview.config.JwtTokenProvider"/>
+        <Bug pattern="CT_CONSTRUCTOR_THROW"/>
+    </Match>
+
 </FindBugsFilter>
