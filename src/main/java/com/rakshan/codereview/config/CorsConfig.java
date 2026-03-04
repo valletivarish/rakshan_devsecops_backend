@@ -25,7 +25,10 @@ public class CorsConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         // Allow frontend origins for both local development and cloud deployment
-        configuration.setAllowedOriginPatterns(List.of("*"));
+        configuration.setAllowedOrigins(List.of(
+                "http://localhost:5173",
+                "http://codereview-frontend-platform.s3-website-eu-west-1.amazonaws.com"
+        ));
         // Allow standard HTTP methods used by REST APIs
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         // Allow common request headers including JWT Authorization
