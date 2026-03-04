@@ -71,37 +71,24 @@ jobs:
           output: 'target/trivy-report.txt'
         continue-on-error: true
 
-      # Step 7b: Run Trivy and generate HTML report for artifact upload
-      - name: Generate Trivy HTML report
+      # Step 7b: Run Trivy and generate JSON report for artifact upload
+      - name: Generate Trivy JSON report
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'fs'
           scan-ref: '.'
-          format: 'template'
-          template: '@/contrib/html.tpl'
-          output: 'target/trivy-report.html'
+          format: 'json'
+          output: 'target/trivy-report.json'
           severity: 'CRITICAL,HIGH,MEDIUM'
         continue-on-error: true
 
       # Step 7c: Run Semgrep SAST for security vulnerability detection
       - name: Run Semgrep security scan
-        uses: returntocorp/semgrep-action@v1
-        with:
-          config: >-
-            p/java
-            p/spring
-            p/owasp-top-ten
-            p/security-audit
-        env:
-          SEMGREP_RULES: "p/java p/spring p/owasp-top-ten p/security-audit"
-        continue-on-error: true
-
-      # Step 7d: Run Semgrep and save JSON report for artifact upload
-      - name: Generate Semgrep report
         run: |
           pip install semgrep
-          semgrep --config p/java --config p/spring --config p/owasp-top-ten --config p/security-audit --json --output target/semgrep-report.json . || true
-          semgrep --config p/java --config p/spring --config p/owasp-top-ten --config p/security-audit --output target/semgrep-report.txt . || true
+          mkdir -p target
+          semgrep --config p/java --config p/owasp-top-ten --config p/security-audit --json --output target/semgrep-report.json . || true
+          semgrep --config p/java --config p/owasp-top-ten --config p/security-audit --output target/semgrep-report.txt . || true
         continue-on-error: true
 
       # Step 8: Generate JaCoCo code coverage report
@@ -153,7 +140,7 @@ jobs:
           name: trivy-report
           path: |
             target/trivy-report.txt
-            target/trivy-report.html
+            target/trivy-report.json
 
       # Step 14: Upload JaCoCo code coverage report as CI artifact
       - name: Upload JaCoCo coverage report
