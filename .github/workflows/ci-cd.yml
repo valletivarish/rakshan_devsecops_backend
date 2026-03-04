@@ -99,7 +99,7 @@ jobs:
       - name: Run SonarCloud analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=decentralised-peer-code-review -Dsonar.organization=valletivarish -Dsonar.host.url=https://sonarcloud.io -Ddependency-check.skip=true -Djacoco.skip=true
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=decentralised-peer-code-review -Dsonar.organization=escthedeadline -Dsonar.host.url=https://sonarcloud.io -Ddependency-check.skip=true -Djacoco.skip=true
         continue-on-error: true
 
       # Step 10: Package the application as a JAR file
