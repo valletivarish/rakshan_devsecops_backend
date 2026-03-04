@@ -39,6 +39,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                // Enable CORS using the CorsConfigurationSource bean
+                .cors(cors -> {})
                 // Disable CSRF since JWT tokens are not vulnerable to CSRF attacks
                 .csrf(csrf -> csrf.disable())
                 // Use stateless session management - no server-side session storage
