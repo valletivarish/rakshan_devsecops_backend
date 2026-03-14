@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 /**
  * DTO for creating or updating a review dimension (criterion).
  * Validates name length (max 100), description length (max 500),
- * and max score range (1-10 to keep scoring consistent).
+ * and max score range (1-5 to keep scoring consistent).
  */
 @Data
 @NoArgsConstructor
@@ -24,9 +24,9 @@ public class ReviewDimensionCreateDto {
     @Size(max = 500, message = "Description must not exceed 500 characters")
     private String description;
 
-    /** Maximum score value for this dimension - must be between 1 and 10 */
+    /** Maximum score value for this dimension - must be between 1 and 5 */
     @NotNull(message = "Max score is required")
     @Min(value = 1, message = "Max score must be at least 1")
-    @Max(value = 10, message = "Max score must not exceed 10")
+    @Max(value = 5, message = "Max score must not exceed 5")
     private Integer maxScore;
 }

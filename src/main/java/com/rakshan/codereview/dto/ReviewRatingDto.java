@@ -23,9 +23,9 @@ public class ReviewRatingDto {
     /** Name of the dimension (populated in response, not required in request) */
     private String dimensionName;
 
-    /** Score assigned for this dimension - must be between 1 and the dimension's max score (up to 10) */
+    /** Score assigned for this dimension - must be between 1 and 5 */
     @NotNull(message = "Score is required")
     @Min(value = 1, message = "Score must be at least 1")
-    @Max(value = 10, message = "Score must not exceed 10")
+    @Max(value = 5, message = "Score must not exceed 5")
     private Integer score;
 }
